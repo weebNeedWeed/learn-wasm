@@ -1,7 +1,10 @@
 mod tests;
+mod timer;
 
 use std::fmt::{Display, Formatter};
 use wasm_bindgen::prelude::*;
+use js_sys::Math;
+use timer::Timer;
 
 #[wasm_bindgen]
 #[repr(u8)]
@@ -46,6 +49,7 @@ impl Universe {
     }
 
     pub fn tick(&mut self) {
+        let _timer = Timer::new("Universe::tick");
         let mut next_cells = self.cells.clone();
 
         for row in 0..self.height {
@@ -70,23 +74,30 @@ impl Universe {
     }
 
     pub fn new() -> Self {
-        let width = 64;
-        let height = 64;
+        Self {
+            width: 0,
+            height: 0,
+            cells: vec![]
+        }
+    }
 
-        let cells = (0..width * height)
-            .map(|x| {
-                if x % 2 == 0 || x % 7 == 0 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
+    pub fn generate_random(&mut self) {
+        let cells = (0..self.width * self.height)
+            .map(|_| {
+               if Math::random() >= 0.5f64 {
+                   Cell::Alive
+               } else {
+                   Cell::Dead
+               }
             }).collect();
 
-        Self {
-            width,
-            height,
-            cells
-        }
+        self.cells = cells;
+    }
+
+    pub fn reset(&mut self) {
+        let cells = (0..self.width * self.height)
+            .map(|_| Cell::Dead).collect();
+        self.cells = cells;
     }
 
     pub fn set_width(&mut self, width: u32) {
@@ -106,6 +117,11 @@ impl Universe {
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
     }
+
+    pub fn toggle_cell(&mut self, row: u32, col: u32) {
+        let idx = self.get_index(row, col);
+        self.cells[idx].toggle()
+    }
 }
 
 impl Universe {
@@ -117,6 +133,15 @@ impl Universe {
         for (row, col) in cells.iter() {
             let idx = self.get_index(*row, *col);
             self.cells[idx] = Cell::Alive;
+        }
+    }
+}
+
+impl Cell {
+    fn toggle(&mut self) {
+        match *self {
+            Cell::Dead => *self = Cell::Alive,
+            Cell::Alive => *self = Cell::Dead,
         }
     }
 }
