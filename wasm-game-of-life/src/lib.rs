@@ -1,3 +1,5 @@
+mod tests;
+
 use std::fmt::{Display, Formatter};
 use wasm_bindgen::prelude::*;
 
@@ -67,7 +69,10 @@ impl Universe {
         self.cells = next_cells;
     }
 
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new() -> Self {
+        let width = 64;
+        let height = 64;
+
         let cells = (0..width * height)
             .map(|x| {
                 if x % 2 == 0 || x % 7 == 0 {
@@ -84,8 +89,35 @@ impl Universe {
         }
     }
 
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_x| Cell::Dead).collect();
+    }
+
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.cells = (0..height * self.width).map(|_x| Cell::Dead).collect();
+    }
+
+    pub fn render(&self) -> String {
+        self.to_string()
+    }
+
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
+    }
+}
+
+impl Universe {
+    pub fn get_cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    pub fn set_cells(&mut self, cells: &[(u32, u32)]) {
+        for (row, col) in cells.iter() {
+            let idx = self.get_index(*row, *col);
+            self.cells[idx] = Cell::Alive;
+        }
     }
 }
 

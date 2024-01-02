@@ -12,7 +12,9 @@ const canvas = document.getElementById("game-of-life-canvas");
 canvas.width = (CELL_SIZE + 1) * width + 1;
 canvas.height = (CELL_SIZE + 1) * height + 1;
 const ctx = canvas.getContext("2d");
-const universe = Universe.new(width, height);
+const universe = Universe.new();
+universe.set_width(width);
+universe.set_width(height);
 
 function drawGrid() {
     ctx.strokeStyle = GRID_COLOR;
