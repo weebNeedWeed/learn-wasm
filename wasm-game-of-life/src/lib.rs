@@ -1,5 +1,6 @@
 mod tests;
 mod timer;
+mod macros;
 
 use std::fmt::{Display, Formatter};
 use wasm_bindgen::prelude::*;
@@ -49,7 +50,6 @@ impl Universe {
     }
 
     pub fn tick(&mut self) {
-        let _timer = Timer::new("Universe::tick");
         let mut next_cells = self.cells.clone();
 
         for row in 0..self.height {
