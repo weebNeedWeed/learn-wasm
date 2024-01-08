@@ -1,0 +1,1 @@
+import Wasm from "closures";

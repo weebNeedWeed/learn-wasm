@@ -1,0 +1,1 @@
+import Wasm from "web-sys-train";
